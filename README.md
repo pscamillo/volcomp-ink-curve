@@ -1,11 +1,14 @@
 # volcomp-ink-curve
 
-How much ink-detection separation does the volcomp codec cost, and how much of
-that loss is specific to compression rather than generic to perturbation?
+PR [ScrollPrize/villa#1704][pr] advises against running the released models on
+volcomp-compressed data. This repository tests that advice on 2.5D ink
+detection and finds that it holds, with numbers: how much separation is lost,
+at which q, and how much of the loss is specific to compression rather than
+generic to perturbation.
 
-The `volume-compressor` codec ([SuperOptimizer/volume-compressor][vc], PR
-[ScrollPrize/villa#1704][pr]) is a 3D DCT backend that compresses the open-data
-volumes by roughly 44x. All 39 scrolls are published as compressed shards at
+The `volume-compressor` codec ([SuperOptimizer/volume-compressor][vc]) is a 3D
+DCT backend that compresses the open-data volumes by roughly 44x. All 39
+scrolls are published as compressed shards at
 [dl.ash2txt.org/community-uploads/forrest/volcomp/][data], level 0 at q = 8
 (confirmed in the array metadata: `codecs[0].configuration.codecs[0] =
 {"name": "volcomp", "q": 8.0}`).
@@ -15,11 +18,10 @@ it, that the released models should not be used on compressed data, and that
 finetuning work is underway with the expectation that most of the discrepancy
 is recoverable.
 
-What follows measures that discrepancy: how much separation a released 2.5D
-ink detector loses on compressed volumes, at 9.4 um, on two segments, with a
+The sensitivity claim is testable with a released detector and a labelled
+segment, and that is what follows: two segments of PHerc0139 at 9.4 um, with a
 planted control that separates information removal from generic sensitivity to
-perturbation. It is a pre-finetuning baseline, not a claim about what
-finetuning will or will not recover.
+perturbation.
 
 [vc]: https://github.com/SuperOptimizer/volume-compressor
 [pr]: https://github.com/ScrollPrize/villa/pull/1704
@@ -41,6 +43,10 @@ On PHerc0139 at 9.4 um, with the released `ink_9um` 2.5D detector:
 The knee sits between q = 4 and q = 8 on both segments. q = 8 is the published
 operating point. q = 2 is free on both segments; q = 16 costs about 44 % on
 both.
+
+This puts a magnitude on the PR's guidance. At the published operating point a
+released 2.5D detector loses about a fifth to a quarter of its separation, and
+the loss is already measurable one step earlier, at q = 4.
 
 ![panel w043](figures/panel_w043_full.png)
 
