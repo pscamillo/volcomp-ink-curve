@@ -42,6 +42,13 @@ The knee sits between q = 4 and q = 8 on both segments. q = 8 is the published
 operating point. q = 2 is free on both segments; q = 16 costs about 44 % on
 both.
 
+![panel w043](figures/panel_w043_full.png)
+
+*w043, the second segment, same four conditions and the same shared grayscale
+window. Ink here is diffuse rather than lettered, which is the regime where
+the detector has least margin to lose; the degradation is still visible from
+left to right.*
+
 ## How much of it is specific to compression
 
 Unstructured Gaussian noise with the *same MAE* as each q level, same render
@@ -69,6 +76,12 @@ the median intensity ratio unchanged (2.826 on w035, identical to the
 original, up to q = 8), while under volcomp it falls monotonically, from 2.826
 to 2.110 at q = 16.
 
+| w043 | w035 |
+|---|---|
+| ![curve w043](figures/curve_w043.png) | ![curve w035](figures/curve_w035.png) |
+
+*d' and compression ratio against q, one round per panel.*
+
 ![panel](figures/panel_w035_full.png)
 
 *w035, full segment. Original, matched noise (MAE 3.6), volcomp q8 (same MAE),
@@ -76,6 +89,9 @@ volcomp q16. Identical render footprint and inference settings; shared
 grayscale window from the 1st-99th percentiles of the original, no per-panel
 normalisation. Original and matched noise are visually indistinguishable;
 q8 blurs the letters; q16 erases them.*
+
+A zoomed crop of the same panel, where the letter shapes are easier to
+judge: [`figures/panel_w035_detail.png`](figures/panel_w035_detail.png).
 
 ---
 
