@@ -6,8 +6,9 @@ detection, at 9.4 um, on two segments of PHerc0139. It holds.
 
 ![detail](figures/panel_w035_detail.png)
 
-*Same volume, same detector, same render footprint, same grayscale window.
-Matched noise is Gaussian noise with the same MAE as volcomp q8.*
+*Same volume, same detector, same render footprint, same grayscale window. The
+noise panel here is matched in the volume; see the next section for why the
+render-matched pairing is the right one.*
 
 ## How much it costs
 
