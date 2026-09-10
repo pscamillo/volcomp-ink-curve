@@ -22,36 +22,46 @@ q = 8 is the published operating point, and costs about a fifth to a quarter of
 the detector's separation. The knee sits between q = 4 and q = 8.
 
 At q = 2 the loss is indistinguishable from zero on both segments, at 11x
-compression: -1.0 % and -2.1 %, against -0.6 % for matched noise at the q = 2
-MAE. Note that this is not the published configuration, which is q = 8 at level
-0; getting q = 2 means re-encoding from the original.
+compression: -1.0 % and -2.1 %. Note that this is not the published
+configuration, which is q = 8 at level 0; getting q = 2 means re-encoding from
+the original.
 
 ## How much of it is specific to compression
 
-Unstructured Gaussian noise, MAE matched to each q level, everything else held
-identical. On w035, all four levels:
+The control is unstructured Gaussian noise added to the original volume, with
+the same render footprint, detector and label. Matching the two perturbations
+turned out to be the hard part, because they do not survive the render the same
+way:
 
-| q | volcomp | matched noise | ratio |
+| perturbation | MAE in volume | MAE in render | attenuation |
 |---|---|---|---|
-| 2 | -1.0 % | -0.6 % | 1.7x |
-| 4 | -7.4 % | -1.2 % | 6.0x |
-| 8 | -25.8 % | -2.3 % | 11.3x |
-| 16 | -44.1 % | -8.4 % | 5.3x |
+| volcomp q8 | 3.6 | 3.8 | 1.06x |
+| Gaussian noise | 3.6 | 1.9 | 0.54x |
 
-On w043 the control was run at q = 8 only: -22.1 % against -9.4 %, a factor of
-2.3x.
+The render interpolates, which averages away half of an uncorrelated
+perturbation and almost none of a block-correlated one. A control matched in
+the volume therefore reaches the detector at half the magnitude. Matching on
+the render instead, which is where the detector sees it:
 
-Part of the loss is generic: a released detector degrades under any
-perturbation of this magnitude, and on w043 that accounts for roughly 40 % of
-it. Part is not: on both segments the codec costs more than matched noise
-does, so quantisation is removing structure the detector uses rather than
-merely adding error of a given size. The specific fraction varies by segment
-and this measurement does not explain why.
+| segment | volcomp q8 | matched noise | factor |
+|---|---|---|---|
+| w035 | -25.8 % (3.82) | -8.4 % (3.57) | 3.1x |
+| w043 | -22.1 % (3.77) | -14.3 % (3.36) | 1.5x |
 
-The factor is not monotonic. It peaks at q = 8 and falls at q = 16, where the
-matched noise has heavier tails than any volcomp level (P90 14 / P99 22,
-against P90 8 / P99 13 at q = 8) and is therefore a more aggressive control
-than needed.
+Render MAE in parentheses. The noise still lands 7 to 11 % below the codec's
+render MAE, so if anything these factors are generous to the codec.
+
+A substantial part of the loss is generic: a released detector degrades under
+any perturbation of this magnitude, and that accounts for a third of the
+observed loss on w035 and two thirds on w043. The rest is not: on both segments
+the codec costs more than comparable noise does, so part of what quantisation
+removes is structure the detector uses. How large that part is varies by
+segment and this measurement does not explain why.
+
+The residual itself is spatially uniform. Comparing |q8 - original| inside the
+ink mask against outside gives a ratio of 1.07 on w035 and 1.02 on w043, with
+matched noise at 1.00. Compression is not selectively hitting the ink. It adds
+error everywhere, and unlike noise that error survives the render.
 
 ## Context
 
@@ -97,14 +107,16 @@ slices. Verified deterministic (repeat run: r = 1.000000, MAE 0.0).
 the label, with equalised n and a permutation null. Same label slice, same
 seed, same render footprint for every volume in a round.
 
-**Planted control.** Zero-mean Gaussian noise, MAE matched to each q level,
-zeros preserved so the mask and auto-crop stay identical. If unstructured noise
-had cost the same as the codec, the curve above would have been measuring
-detector fragility rather than information removal.
+**Planted control.** Zero-mean Gaussian noise added to the original volume,
+zeros preserved so the mask and auto-crop stay identical, then rendered and
+inferred through the same pipeline. If unstructured noise had cost the same as
+the codec, the curve above would have been measuring detector fragility rather
+than information removal.
 
-Matched noise also leaves the median intensity ratio unchanged (2.826 on w035,
-identical to the original, up to q = 8), while under volcomp it falls
-monotonically, from 2.826 to 2.110 at q = 16.
+The first version of this control was matched by MAE in the volume, which
+turned out to under-perturb the detector by about half once the render
+interpolation is taken into account. The figures above use render-matched
+noise; the volume-matched ones are in the record.
 
 Full protocol and the sealed record are in [`docs/`](docs/).
 
@@ -129,12 +141,13 @@ regions. PSNR at q = 8 is close (35.05 dB here, 35.00 dB in the PR), though
 both scans and both regions differ, so that agreement is suggestive rather than
 a calibration.
 
-**The noise control's factor varies by segment.** An untested hypothesis is
-baseline: w043 has diffuse ink signal and a much lower starting d' (1.605 vs
-2.587), so any perturbation bites proportionally harder there. At q = 16 the
-matched noise also has heavier tails than any volcomp level (P90 14 / P99 22,
-against P90 8 / P99 13 at q = 8), making that particular control more
-aggressive than needed.
+**The noise control's factor varies by segment**, 3.1x against 1.5x, and this
+measurement does not explain the gap. An untested hypothesis is baseline: w043
+has diffuse ink signal and a much lower starting d' (1.605 vs 2.587), so any
+perturbation bites proportionally harder there. Matching perturbations by MAE
+is itself approximate, since the two have different spatial statistics at the
+same MAE; the render-matched pairing is the closest available, not an exact
+equivalence.
 
 **Inference-footprint instability.** Cropping the same official volume at
 (20, 20) instead of (39, 39), with no render and no compression in between,
