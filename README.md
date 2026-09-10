@@ -178,13 +178,14 @@ Scripts, per-level outputs and sha256 seals: [`scripts/`](scripts/),
 
 ---
 
-The codec and the compressed volumes are the work of the author of PR
-[#1704][pr]; this repository is an independent measurement made on them, by
-Paulo Sergio Camillo (pscamillo), 2026-09-08 to 2026-09-10.
+The codec and the compressed volumes are the work of
+[SuperOptimizer](https://github.com/SuperOptimizer) (PR [#1704][pr]); this
+repository is an independent measurement made on them, by Paulo Sergio Camillo
+(pscamillo), 2026-09-08 to 2026-09-10.
 
-Thanks to the codec author for publishing both the codec and the compressed
-data openly, and for raising the question about 2.5D ink sensitivity that
-prompted this measurement.
+Thanks to SuperOptimizer for publishing both the codec and the compressed data
+openly, and for raising the question about 2.5D ink sensitivity that prompted
+this measurement.
 
 [vc]: https://github.com/SuperOptimizer/volume-compressor
 [pr]: https://github.com/ScrollPrize/villa/pull/1704
