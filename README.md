@@ -19,18 +19,27 @@ Matched noise is Gaussian noise with the same MAE as volcomp q8.*
 | 16 | ~52x | -44.3 % | -44.1 % |
 
 q = 8 is the published operating point, and costs about a fifth to a quarter of
-the detector's separation. q = 2 is free on both segments. The knee sits
-between q = 4 and q = 8.
+the detector's separation. The knee sits between q = 4 and q = 8.
+
+At q = 2 the loss is indistinguishable from zero on both segments, at 11x
+compression: -1.0 % and -2.1 %, against -0.6 % for matched noise at the q = 2
+MAE. Note that this is not the published configuration, which is q = 8 at level
+0; getting q = 2 means re-encoding from the original.
 
 ## How much of it is specific to compression
 
-Unstructured Gaussian noise with the same MAE as q = 8, everything else held
-identical:
+Unstructured Gaussian noise, MAE matched to each q level, everything else held
+identical. On w035, all four levels:
 
-| segment | volcomp q8 | matched noise | ratio |
+| q | volcomp | matched noise | ratio |
 |---|---|---|---|
-| w035 | -25.8 % | -2.3 % | 11.3x |
-| w043 | -22.1 % | -9.4 % | 2.3x |
+| 2 | -1.0 % | -0.6 % | 1.7x |
+| 4 | -7.4 % | -1.2 % | 6.0x |
+| 8 | -25.8 % | -2.3 % | 11.3x |
+| 16 | -44.1 % | -8.4 % | 5.3x |
+
+On w043 the control was run at q = 8 only: -22.1 % against -9.4 %, a factor of
+2.3x.
 
 Part of the loss is generic: a released detector degrades under any
 perturbation of this magnitude, and on w043 that accounts for roughly 40 % of
@@ -38,6 +47,11 @@ it. Part is not: on both segments the codec costs more than matched noise
 does, so quantisation is removing structure the detector uses rather than
 merely adding error of a given size. The specific fraction varies by segment
 and this measurement does not explain why.
+
+The factor is not monotonic. It peaks at q = 8 and falls at q = 16, where the
+matched noise has heavier tails than any volcomp level (P90 14 / P99 22,
+against P90 8 / P99 13 at q = 8) and is therefore a more aggressive control
+than needed.
 
 ## Context
 
