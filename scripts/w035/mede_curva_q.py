@@ -27,6 +27,6 @@ print(f'\nrecomendacao (maior q que nao custa): {rec if rec else "nenhum >= 2; v
 json.dump({str(k): dict(razao=v[0], d=v[1], taxa=v[2]) for k, v in pts.items()}, open(f'{D}/curva_q.json', 'w'), indent=1)
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 qs = sorted(pts); fig, ax = plt.subplots(1, 2, figsize=(10, 4))
-ax[0].plot(qs, [pts[q][0] for q in qs], 'o-'); ax[0].axhline(r0 - 0.05, ls='--', c='gray'); ax[0].set_xscale('log', base=2); ax[0].set_xlabel('q'); ax[0].set_ylabel('razao tinta/papiro'); ax[0].set_title('ink_9um, w043')
+ax[0].plot(qs, [pts[q][0] for q in qs], 'o-'); ax[0].axhline(r0 - 0.05, ls='--', c='gray'); ax[0].set_xscale('log', base=2); ax[0].set_xlabel('q'); ax[0].set_ylabel('razao tinta/papiro'); ax[0].set_title('ink_9um, w035')
 ax[1].plot([pts[q][2] for q in qs], [pts[q][1] for q in qs], 'o-'); [ax[1].annotate(f'q={q}', (pts[q][2], pts[q][1])) for q in qs]; ax[1].set_xscale('log'); ax[1].set_xlabel('taxa de compressao'); ax[1].set_ylabel("d'")
 fig.tight_layout(); fig.savefig(f'{D}/curva_q.png', dpi=110)
